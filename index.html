@@ -1,345 +1,456 @@
-import React, { useState } from 'react';
-import { Calculator, FileSpreadsheet, Info, ChevronRight, CheckCircle2 } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tính Thuế Thu Nhập Cá Nhân 2025</title>
+    <!-- Nhúng Tailwind CSS qua CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Ẩn các section không active */
+        .hidden-section { display: none !important; }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-800 p-4 md:p-8 font-sans">
 
-export default function App() {
-  const [activeTab, setActiveTab] = useState('calculator');
-  
-  // States cho các input
-  const [tongThuNhap, setTongThuNhap] = useState(500000000);
-  const [soNPT, setSoNPT] = useState(1);
-  const [soThangGiamTru, setSoThangGiamTru] = useState(12);
-  const [tienBaoHiem, setTienBaoHiem] = useState(15000000);
-
-  // Constants
-  const MUC_GIAM_TRU_NPT = 4400000;
-  const MUC_GIAM_TRU_BAN_THAN = 11000000;
-  const THANG_TRONG_NAM = 12;
-
-  // Xử lý định dạng số
-  const formatNum = (num) => new Intl.NumberFormat('vi-VN').format(num);
-  const parseNum = (str) => parseInt(str.toString().replace(/\D/g, '') || '0', 10);
-
-  const handleIncomeChange = (e) => setTongThuNhap(parseNum(e.target.value));
-  const handleInsuranceChange = (e) => setTienBaoHiem(parseNum(e.target.value));
-
-  // Tính toán
-  const giamTruGiaCanh = soNPT * soThangGiamTru * MUC_GIAM_TRU_NPT;
-  const giamTruBanThan = THANG_TRONG_NAM * MUC_GIAM_TRU_BAN_THAN;
-  
-  const tongThuNhapTinhThue = Math.max(0, tongThuNhap - giamTruGiaCanh - tienBaoHiem - giamTruBanThan);
-
-  // Tính thuế 7 bậc
-  const bac1 = Math.max(0, Math.min(tongThuNhapTinhThue, 60000000) - 0) * 0.05;
-  const bac2 = Math.max(0, Math.min(tongThuNhapTinhThue, 120000000) - 60000000) * 0.10;
-  const bac3 = Math.max(0, Math.min(tongThuNhapTinhThue, 216000000) - 120000000) * 0.15;
-  const bac4 = Math.max(0, Math.min(tongThuNhapTinhThue, 384000000) - 216000000) * 0.20;
-  const bac5 = Math.max(0, Math.min(tongThuNhapTinhThue, 624000000) - 384000000) * 0.25;
-  const bac6 = Math.max(0, Math.min(tongThuNhapTinhThue, 960000000) - 624000000) * 0.30;
-  const bac7 = Math.max(0, tongThuNhapTinhThue - 960000000) * 0.35;
-
-  const tongThue = bac1 + bac2 + bac3 + bac4 + bac5 + bac6 + bac7;
-
-  return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 p-4 md:p-8 font-sans">
-      <div className="max-w-5xl mx-auto space-y-6">
-        
-        {/* Header */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-blue-700 flex items-center gap-2">
-              <Calculator className="w-7 h-7" />
-              Tính Thuế Thu Nhập Cá Nhân 2025
-            </h1>
-            <p className="text-slate-500 mt-1">Dựa trên bảng thuế suất lũy tiến từng phần (năm)</p>
-          </div>
-          
-          {/* Tabs */}
-          <div className="flex bg-slate-100 p-1 rounded-lg">
-            <button 
-              onClick={() => setActiveTab('calculator')}
-              className={`px-4 py-2 rounded-md font-medium text-sm transition-all flex items-center gap-2 ${activeTab === 'calculator' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
-            >
-              <Calculator className="w-4 h-4" />
-              Máy tính trực tuyến
-            </button>
-            <button 
-              onClick={() => setActiveTab('excel')}
-              className={`px-4 py-2 rounded-md font-medium text-sm transition-all flex items-center gap-2 ${activeTab === 'excel' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
-            >
-              <FileSpreadsheet className="w-4 h-4" />
-              Công thức Excel
-            </button>
-          </div>
+    <!-- Đã tăng max-w-5xl thành max-w-6xl để có thêm không gian -->
+    <div class="max-w-6xl mx-auto space-y-6">
+        <!-- Header -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-blue-700 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>
+                    Tính Thuế Thu Nhập Cá Nhân 2025
+                </h1>
+                <p class="text-slate-500 mt-1">Dựa trên bảng thuế suất lũy tiến từng phần (năm)</p>
+            </div>
+            
+            <!-- Tabs -->
+            <div class="flex bg-slate-100 p-1 rounded-lg">
+                <button id="btn-tab-calculator" onclick="switchTab('calculator')" class="px-4 py-2 rounded-md font-medium text-sm transition-all flex items-center gap-2 bg-white text-blue-700 shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>
+                    Máy tính trực tuyến
+                </button>
+                <button id="btn-tab-excel" onclick="switchTab('excel')" class="px-4 py-2 rounded-md font-medium text-sm transition-all flex items-center gap-2 text-slate-600 hover:text-slate-900">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><path d="M8 11h8"/><path d="M8 15h8"/><path d="M12 11v8"/></svg>
+                    Công thức Excel
+                </button>
+            </div>
         </div>
 
-        {activeTab === 'calculator' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
-            {/* Cột Nhập Liệu */}
-            <div className="lg:col-span-5 space-y-6">
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                <h2 className="text-lg font-bold mb-4 text-slate-800 border-b pb-2">1. Thông tin thu nhập & khấu trừ</h2>
-                
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1">Tổng thu nhập chịu thuế / năm (VNĐ)</label>
-                    <input 
-                      type="text" 
-                      value={formatNum(tongThuNhap)}
-                      onChange={handleIncomeChange}
-                      className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-lg font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                    />
-                  </div>
+        <!-- Tab: Calculator -->
+        <div id="tab-calculator" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Cột Nhập Liệu: Ép nhỏ lại còn 4 cột -->
+            <div class="lg:col-span-4 space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <h2 class="text-lg font-bold mb-4 text-slate-800 border-b pb-2">1. Thông tin thu nhập & khấu trừ</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Tổng thu nhập chịu thuế / năm (VNĐ)</label>
+                            <input type="text" id="in-tong-thu-nhap" value="500.000.000" class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-lg font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" />
+                        </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-1">Số người phụ thuộc</label>
-                      <input 
-                        type="number" 
-                        min="0"
-                        value={soNPT}
-                        onChange={(e) => setSoNPT(Math.max(0, parseInt(e.target.value) || 0))}
-                        className="w-full border border-slate-300 rounded-lg px-4 py-2 text-base focus:ring-2 focus:ring-blue-500 outline-none"
-                      />
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Số người phụ thuộc</label>
+                                <input type="number" id="in-so-npt" min="0" value="1" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-base focus:ring-2 focus:ring-blue-500 outline-none" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Số tháng giảm trừ</label>
+                                <input type="number" id="in-so-thang" min="0" max="12" value="12" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-base focus:ring-2 focus:ring-blue-500 outline-none" />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Tổng tiền bảo hiểm được trừ (VNĐ)</label>
+                            <input type="text" id="in-tien-bao-hiem" value="15.000.000" class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-lg font-medium focus:ring-2 focus:ring-blue-500 outline-none" />
+                        </div>
+
+                        <div class="bg-slate-100 p-4 rounded-lg">
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Giảm trừ bản thân (Mặc định 12 tháng)</label>
+                            <p class="text-lg font-semibold text-slate-800"><span id="out-giam-tru-ban-than-label">132.000.000</span> VNĐ</p>
+                            <p class="text-xs text-slate-500">(= 12 tháng × 11.000.000đ)</p>
+                        </div>
                     </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-1">Số tháng giảm trừ</label>
-                      <input 
-                        type="number" 
-                        min="0" max="12"
-                        value={soThangGiamTru}
-                        onChange={(e) => setSoThangGiamTru(Math.max(0, Math.min(12, parseInt(e.target.value) || 0)))}
-                        className="w-full border border-slate-300 rounded-lg px-4 py-2 text-base focus:ring-2 focus:ring-blue-500 outline-none"
-                      />
-                    </div>
-                  </div>
-                  <div className="bg-blue-50 text-blue-800 text-sm p-3 rounded-lg flex items-start gap-2">
-                    <Info className="w-4 h-4 mt-0.5 shrink-0" />
-                    <p>Mức giảm trừ gia cảnh NPT: <b>{formatNum(giamTruGiaCanh)} VNĐ</b> <br/> <span className="text-blue-600 text-xs">(= {soNPT} NPT × {soThangGiamTru} tháng × 4.400.000đ)</span></p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1">Tổng tiền bảo hiểm được trừ (VNĐ)</label>
-                    <input 
-                      type="text" 
-                      value={formatNum(tienBaoHiem)}
-                      onChange={handleInsuranceChange}
-                      className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-lg font-medium focus:ring-2 focus:ring-blue-500 outline-none"
-                    />
-                  </div>
-
-                  <div className="bg-slate-100 p-4 rounded-lg">
-                    <label className="block text-sm font-semibold text-slate-700 mb-1">Giảm trừ bản thân (Mặc định 12 tháng)</label>
-                    <p className="text-lg font-semibold text-slate-800">{formatNum(giamTruBanThan)} VNĐ</p>
-                    <p className="text-xs text-slate-500">(= 12 tháng × 11.000.000đ)</p>
-                  </div>
                 </div>
-              </div>
             </div>
 
-            {/* Cột Kết Quả */}
-            <div className="lg:col-span-7 space-y-6">
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                <h2 className="text-lg font-bold mb-4 text-slate-800 border-b pb-2">2. Kết quả tính thuế</h2>
-                
-                <div className="flex flex-col sm:flex-row justify-between items-center bg-blue-600 text-white p-6 rounded-xl shadow-inner mb-6">
-                  <div>
-                    <p className="text-blue-100 font-medium text-sm uppercase tracking-wider mb-1">Tổng thu nhập tính thuế</p>
-                    <p className="text-3xl font-bold">{formatNum(tongThuNhapTinhThue)} <span className="text-lg font-normal">VNĐ</span></p>
-                  </div>
-                  {tongThuNhapTinhThue <= 0 && (
-                    <div className="mt-2 sm:mt-0 bg-white/20 px-3 py-1 rounded-full text-sm flex items-center gap-1">
-                      <CheckCircle2 className="w-4 h-4" /> Không phải nộp thuế
+            <!-- Cột Kết Quả: Tăng lên 8 cột để rộng hơn -->
+            <div class="lg:col-span-8 space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <h2 class="text-lg font-bold mb-4 text-slate-800 border-b pb-2">2. Kết quả tính thuế</h2>
+                    
+                    <!-- Chi tiết phép tính -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-6 text-slate-700">
+                        <h3 class="font-semibold mb-3 text-slate-800 text-sm uppercase tracking-wider">Chi tiết phép tính:</h3>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span>Tổng thu nhập chịu thuế:</span>
+                                <span class="font-semibold" id="calc-tong-thu-nhap">0</span>
+                            </div>
+                            <div class="flex justify-between text-red-600">
+                                <span>- Giảm trừ bản thân (1 năm):</span>
+                                <span id="calc-giam-tru-ban-than">0</span>
+                            </div>
+                            <div class="flex justify-between text-red-600">
+                                <span>- Giảm trừ gia cảnh (<span id="calc-npt-count">1</span> NPT x <span id="calc-npt-months">12</span>T):</span>
+                                <span id="calc-giam-tru-gia-canh">0</span>
+                            </div>
+                            <div class="flex justify-between text-red-600">
+                                <span>- Bảo hiểm được trừ:</span>
+                                <span id="calc-bao-hiem">0</span>
+                            </div>
+                            <div class="pt-3 mt-2 border-t border-slate-300 flex justify-between items-center font-bold text-blue-700 text-lg">
+                                <span>= Tổng thu nhập tính thuế:</span>
+                                <span id="calc-tong-thu-nhap-tinh-thue">0</span>
+                            </div>
+                        </div>
                     </div>
-                  )}
-                </div>
 
-                <h3 className="text-md font-semibold text-slate-700 mb-3 flex items-center gap-2">
-                  <ChevronRight className="w-5 h-5 text-blue-500" />
-                  Chi tiết thuế theo 7 bậc (Năm)
-                </h3>
-                
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-sm">
-                    <thead>
-                      <tr className="bg-slate-100 text-slate-600">
-                        <th className="p-3 font-semibold rounded-tl-lg">Bậc</th>
-                        <th className="p-3 font-semibold">Phần TNTT/năm</th>
-                        <th className="p-3 font-semibold text-center">Thuế suất</th>
-                        <th className="p-3 font-semibold text-right rounded-tr-lg">Tiền thuế (VNĐ)</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      <tr className={bac1 > 0 ? 'bg-amber-50/50 text-amber-900 font-medium' : 'text-slate-500'}>
-                        <td className="p-3">1</td>
-                        <td className="p-3">Đến 60 triệu</td>
-                        <td className="p-3 text-center">5%</td>
-                        <td className="p-3 text-right">{formatNum(bac1)}</td>
-                      </tr>
-                      <tr className={bac2 > 0 ? 'bg-amber-50/50 text-amber-900 font-medium' : 'text-slate-500'}>
-                        <td className="p-3">2</td>
-                        <td className="p-3">Trên 60 đến 120 tr</td>
-                        <td className="p-3 text-center">10%</td>
-                        <td className="p-3 text-right">{formatNum(bac2)}</td>
-                      </tr>
-                      <tr className={bac3 > 0 ? 'bg-amber-50/50 text-amber-900 font-medium' : 'text-slate-500'}>
-                        <td className="p-3">3</td>
-                        <td className="p-3">Trên 120 đến 216 tr</td>
-                        <td className="p-3 text-center">15%</td>
-                        <td className="p-3 text-right">{formatNum(bac3)}</td>
-                      </tr>
-                      <tr className={bac4 > 0 ? 'bg-amber-50/50 text-amber-900 font-medium' : 'text-slate-500'}>
-                        <td className="p-3">4</td>
-                        <td className="p-3">Trên 216 đến 384 tr</td>
-                        <td className="p-3 text-center">20%</td>
-                        <td className="p-3 text-right">{formatNum(bac4)}</td>
-                      </tr>
-                      <tr className={bac5 > 0 ? 'bg-amber-50/50 text-amber-900 font-medium' : 'text-slate-500'}>
-                        <td className="p-3">5</td>
-                        <td className="p-3">Trên 384 đến 624 tr</td>
-                        <td className="p-3 text-center">25%</td>
-                        <td className="p-3 text-right">{formatNum(bac5)}</td>
-                      </tr>
-                      <tr className={bac6 > 0 ? 'bg-amber-50/50 text-amber-900 font-medium' : 'text-slate-500'}>
-                        <td className="p-3">6</td>
-                        <td className="p-3">Trên 624 đến 960 tr</td>
-                        <td className="p-3 text-center">30%</td>
-                        <td className="p-3 text-right">{formatNum(bac6)}</td>
-                      </tr>
-                      <tr className={bac7 > 0 ? 'bg-amber-50/50 text-amber-900 font-medium' : 'text-slate-500'}>
-                        <td className="p-3">7</td>
-                        <td className="p-3">Trên 960 triệu</td>
-                        <td className="p-3 text-center">35%</td>
-                        <td className="p-3 text-right">{formatNum(bac7)}</td>
-                      </tr>
-                    </tbody>
-                    <tfoot>
-                      <tr className="bg-red-50 text-red-700 font-bold text-base border-t-2 border-red-200">
-                        <td colSpan="3" className="p-4 rounded-bl-lg">TỔNG THUẾ TNCN PHẢI NỘP</td>
-                        <td className="p-4 text-right rounded-br-lg">{formatNum(tongThue)}</td>
-                      </tr>
-                    </tfoot>
-                  </table>
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-md font-semibold text-slate-700 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500"><path d="m9 18 6-6-6-6"/></svg>
+                            Chi tiết thuế theo 7 bậc (Năm)
+                        </h3>
+                        <div id="badge-khong-thue" class="hidden bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg> 
+                            Không phải nộp thuế
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto border border-slate-200 rounded-lg">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-600">
+                                    <th class="p-3 font-semibold border-b border-slate-200">Bậc</th>
+                                    <th class="p-3 font-semibold border-b border-slate-200">Phần thu nhập</th>
+                                    <th class="p-3 font-semibold text-right border-b border-slate-200 text-blue-700">Tiền chịu thuế ở bậc này</th>
+                                    <th class="p-3 font-semibold text-center border-b border-slate-200">Thuế suất</th>
+                                    <th class="p-3 font-semibold text-right border-b border-slate-200">Tiền thuế (VNĐ)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr id="row-bac1">
+                                    <td class="p-3">1</td><td class="p-3">Đến 60 triệu</td><td class="p-3 text-right text-blue-700 font-semibold" id="tt1">0</td><td class="p-3 text-center">5%</td><td class="p-3 text-right" id="thue1">0</td>
+                                </tr>
+                                <tr id="row-bac2">
+                                    <td class="p-3">2</td><td class="p-3">Trên 60 đến 120 tr</td><td class="p-3 text-right text-blue-700 font-semibold" id="tt2">0</td><td class="p-3 text-center">10%</td><td class="p-3 text-right" id="thue2">0</td>
+                                </tr>
+                                <tr id="row-bac3">
+                                    <td class="p-3">3</td><td class="p-3">Trên 120 đến 216 tr</td><td class="p-3 text-right text-blue-700 font-semibold" id="tt3">0</td><td class="p-3 text-center">15%</td><td class="p-3 text-right" id="thue3">0</td>
+                                </tr>
+                                <tr id="row-bac4">
+                                    <td class="p-3">4</td><td class="p-3">Trên 216 đến 384 tr</td><td class="p-3 text-right text-blue-700 font-semibold" id="tt4">0</td><td class="p-3 text-center">20%</td><td class="p-3 text-right" id="thue4">0</td>
+                                </tr>
+                                <tr id="row-bac5">
+                                    <td class="p-3">5</td><td class="p-3">Trên 384 đến 624 tr</td><td class="p-3 text-right text-blue-700 font-semibold" id="tt5">0</td><td class="p-3 text-center">25%</td><td class="p-3 text-right" id="thue5">0</td>
+                                </tr>
+                                <tr id="row-bac6">
+                                    <td class="p-3">6</td><td class="p-3">Trên 624 đến 960 tr</td><td class="p-3 text-right text-blue-700 font-semibold" id="tt6">0</td><td class="p-3 text-center">30%</td><td class="p-3 text-right" id="thue6">0</td>
+                                </tr>
+                                <tr id="row-bac7">
+                                    <td class="p-3">7</td><td class="p-3">Trên 960 triệu</td><td class="p-3 text-right text-blue-700 font-semibold" id="tt7">0</td><td class="p-3 text-center">35%</td><td class="p-3 text-right" id="thue7">0</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr class="bg-red-50 text-red-700 font-bold text-base border-t-2 border-red-200">
+                                    <td colspan="4" class="p-4">TỔNG THUẾ TNCN PHẢI NỘP</td>
+                                    <td class="p-4 text-right text-lg" id="tong-thue">0</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
-        )}
+        </div>
 
-        {/* Tab Excel */}
-        {activeTab === 'excel' && (
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-            <h2 className="text-xl font-bold mb-2 text-slate-800 flex items-center gap-2">
-              <FileSpreadsheet className="w-6 h-6 text-green-600" />
-              Hướng dẫn lập File Excel
+        <!-- Tab: Excel Guide -->
+        <div id="tab-excel" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 hidden-section">
+            <h2 class="text-xl font-bold mb-2 text-slate-800 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-600"><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><path d="M8 11h8"/><path d="M8 15h8"/><path d="M12 11v8"/></svg>
+                Hướng dẫn lập File Excel có hiển thị số tiền từng bậc
             </h2>
-            <p className="text-slate-600 mb-6">Mở một file Excel trắng và copy chính xác các công thức dưới đây vào từng ô (Cell) tương ứng để tạo bảng tính tự động.</p>
+            <p class="text-slate-600 mb-6">Mở một file Excel trắng và làm theo hướng dẫn dưới đây. Ở phần tính thuế, chúng ta sẽ tách riêng Ô Tính thu nhập từng bậc và Ô tính tiền thuế để dễ kiểm tra.</p>
             
-            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 text-sm text-yellow-800">
-              <p><strong>Lưu ý dấu ngăn cách hàm:</strong> Các công thức bên dưới đang dùng dấu phẩy <code>,</code>. Nếu máy tính của bạn dùng định dạng tiếng Việt, Excel có thể yêu cầu đổi dấu phẩy <code>,</code> thành dấu chấm phẩy <code>;</code> trong các hàm (ví dụ: thay vì <code>MAX(0, B2)</code> thì nhập <code>MAX(0; B2)</code>).</p>
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 text-sm text-yellow-800">
+                <p><strong>Lưu ý dấu ngăn cách hàm:</strong> Các công thức bên dưới dùng dấu phẩy <code>,</code>. Nếu Excel của bạn báo lỗi, hãy đổi toàn bộ dấu phẩy <code>,</code> thành dấu chấm phẩy <code>;</code> trong các hàm.</p>
             </div>
 
-            <div className="overflow-x-auto border border-slate-200 rounded-lg">
-              <table className="w-full text-sm text-left">
-                <thead className="bg-slate-100 text-slate-700 border-b border-slate-200">
-                  <tr>
-                    <th className="px-4 py-3 font-semibold w-16 text-center border-r">Ô (Cell)</th>
-                    <th className="px-4 py-3 font-semibold w-1/3 border-r">Nội dung (Tiêu đề)</th>
-                    <th className="px-4 py-3 font-semibold">Nhập giá trị hoặc Công thức Excel</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200">
-                  {/* Inputs */}
-                  <tr className="bg-slate-50"><td colSpan="3" className="px-4 py-2 font-bold text-slate-700">1. THÔNG TIN ĐẦU VÀO</td></tr>
-                  <tr>
-                    <td className="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r">A2</td>
-                    <td className="px-4 py-2 border-r">Tổng thu nhập chịu thuế/năm</td>
-                    <td className="px-4 py-2 text-slate-500 italic">Nhập số tiền (VD: 500000000) vào ô <strong className="text-black">B2</strong></td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r">A3</td>
-                    <td className="px-4 py-2 border-r">Số người phụ thuộc</td>
-                    <td className="px-4 py-2 text-slate-500 italic">Nhập số lượng (VD: 1) vào ô <strong className="text-black">B3</strong></td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r">A4</td>
-                    <td className="px-4 py-2 border-r">Số tháng giảm trừ</td>
-                    <td className="px-4 py-2 text-slate-500 italic">Nhập số tháng (VD: 12) vào ô <strong className="text-black">B4</strong></td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r">A5</td>
-                    <td className="px-4 py-2 font-semibold border-r">Giảm trừ gia cảnh (NPT)</td>
-                    <td className="px-4 py-2 font-mono text-green-700 bg-green-50">=B3*B4*4400000</td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r">A6</td>
-                    <td className="px-4 py-2 border-r">Tổng tiền BH được trừ</td>
-                    <td className="px-4 py-2 text-slate-500 italic">Nhập số tiền (VD: 15000000) vào ô <strong className="text-black">B6</strong></td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r">A7</td>
-                    <td className="px-4 py-2 font-semibold border-r">Giảm trừ bản thân</td>
-                    <td className="px-4 py-2 font-mono text-green-700 bg-green-50">=12*11000000</td>
-                  </tr>
+            <div class="overflow-x-auto border border-slate-200 rounded-lg">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-slate-100 text-slate-700 border-b border-slate-200">
+                        <tr>
+                            <th class="px-4 py-3 font-semibold w-16 text-center border-r">Ô (Cell)</th>
+                            <th class="px-4 py-3 font-semibold w-1/3 border-r">Nội dung (Tiêu đề)</th>
+                            <th class="px-4 py-3 font-semibold">Nhập giá trị hoặc Công thức Excel</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200">
+                        <!-- Inputs -->
+                        <tr class="bg-slate-50"><td colspan="3" class="px-4 py-2 font-bold text-slate-700">1. THÔNG TIN ĐẦU VÀO</td></tr>
+                        <tr>
+                            <td class="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r">A2</td>
+                            <td class="px-4 py-2 border-r">Tổng thu nhập chịu thuế/năm</td>
+                            <td class="px-4 py-2 text-slate-500 italic">Nhập số tiền vào ô <strong class="text-black">B2</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r">A3</td>
+                            <td class="px-4 py-2 border-r">Số người phụ thuộc</td>
+                            <td class="px-4 py-2 text-slate-500 italic">Nhập số lượng NPT vào ô <strong class="text-black">B3</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r">A4</td>
+                            <td class="px-4 py-2 border-r">Số tháng giảm trừ</td>
+                            <td class="px-4 py-2 text-slate-500 italic">Nhập số tháng (VD: 12) vào ô <strong class="text-black">B4</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r">A5</td>
+                            <td class="px-4 py-2 font-semibold border-r text-red-600">Giảm trừ bản thân</td>
+                            <td class="px-4 py-2 font-mono text-green-700 bg-green-50">=12*11000000</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r">A6</td>
+                            <td class="px-4 py-2 font-semibold border-r text-red-600">Giảm trừ gia cảnh (NPT)</td>
+                            <td class="px-4 py-2 font-mono text-green-700 bg-green-50">=B3*B4*4400000</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r">A7</td>
+                            <td class="px-4 py-2 font-semibold border-r text-red-600">Tổng tiền BH được trừ</td>
+                            <td class="px-4 py-2 text-slate-500 italic">Nhập số tiền đóng bảo hiểm vào ô <strong class="text-black">B7</strong></td>
+                        </tr>
 
-                  {/* Calculations */}
-                  <tr className="bg-slate-50"><td colSpan="3" className="px-4 py-2 font-bold text-slate-700 mt-4">2. TÍNH TOÁN THUẾ</td></tr>
-                  <tr>
-                    <td className="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r">A9</td>
-                    <td className="px-4 py-2 font-bold text-blue-700 border-r">TỔNG THU NHẬP TÍNH THUẾ</td>
-                    <td className="px-4 py-2 font-mono text-blue-700 font-bold bg-blue-50">=MAX(0, B2 - B5 - B6 - B7)</td>
-                  </tr>
-                  
-                  {/* Brackets */}
-                  <tr>
-                    <td className="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r">A11</td>
-                    <td className="px-4 py-2 border-r">Thuế Bậc 1 (Đến 60 tr)</td>
-                    <td className="px-4 py-2 font-mono text-slate-800 bg-slate-50">=MAX(0, MIN(B9, 60000000) - 0) * 5%</td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r">A12</td>
-                    <td className="px-4 py-2 border-r">Thuế Bậc 2 (&gt;60 tr đến 120 tr)</td>
-                    <td className="px-4 py-2 font-mono text-slate-800 bg-slate-50">=MAX(0, MIN(B9, 120000000) - 60000000) * 10%</td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r">A13</td>
-                    <td className="px-4 py-2 border-r">Thuế Bậc 3 (&gt;120 tr đến 216 tr)</td>
-                    <td className="px-4 py-2 font-mono text-slate-800 bg-slate-50">=MAX(0, MIN(B9, 216000000) - 120000000) * 15%</td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r">A14</td>
-                    <td className="px-4 py-2 border-r">Thuế Bậc 4 (&gt;216 tr đến 384 tr)</td>
-                    <td className="px-4 py-2 font-mono text-slate-800 bg-slate-50">=MAX(0, MIN(B9, 384000000) - 216000000) * 20%</td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r">A15</td>
-                    <td className="px-4 py-2 border-r">Thuế Bậc 5 (&gt;384 tr đến 624 tr)</td>
-                    <td className="px-4 py-2 font-mono text-slate-800 bg-slate-50">=MAX(0, MIN(B9, 624000000) - 384000000) * 25%</td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r">A16</td>
-                    <td className="px-4 py-2 border-r">Thuế Bậc 6 (&gt;624 tr đến 960 tr)</td>
-                    <td className="px-4 py-2 font-mono text-slate-800 bg-slate-50">=MAX(0, MIN(B9, 960000000) - 624000000) * 30%</td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r">A17</td>
-                    <td className="px-4 py-2 border-r">Thuế Bậc 7 (Trên 960 tr)</td>
-                    <td className="px-4 py-2 font-mono text-slate-800 bg-slate-50">=MAX(0, B9 - 960000000) * 35%</td>
-                  </tr>
+                        <!-- Calculations -->
+                        <tr class="bg-slate-50"><td colspan="3" class="px-4 py-2 font-bold text-slate-700 mt-4 border-t">2. TÍNH TOÁN THUẾ THEO BẬC</td></tr>
+                        <tr>
+                            <td class="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r">A9</td>
+                            <td class="px-4 py-2 font-bold text-blue-700 border-r uppercase">Tổng thu nhập tính thuế</td>
+                            <td class="px-4 py-2 font-mono text-blue-700 font-bold bg-blue-50">=MAX(0, B2 - B5 - B6 - B7)</td>
+                        </tr>
+                        
+                        <!-- Bracket 1 -->
+                        <tr>
+                            <td class="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r" rowspan="2">Bậc 1</td>
+                            <td class="px-4 py-2 border-r text-blue-700 font-medium bg-blue-50/30">Tiền chịu thuế Bậc 1 (Ô B11)</td>
+                            <td class="px-4 py-2 font-mono text-slate-800 bg-slate-50">=MAX(0, MIN(B9, 60000000) - 0)</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border-r font-medium text-slate-700">Tiền thuế Bậc 1 (Ô C11)</td>
+                            <td class="px-4 py-2 font-mono text-slate-800 bg-slate-50">=B11 * 5%</td>
+                        </tr>
+                        <!-- Bracket 2 -->
+                        <tr>
+                            <td class="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r" rowspan="2">Bậc 2</td>
+                            <td class="px-4 py-2 border-r text-blue-700 font-medium bg-blue-50/30">Tiền chịu thuế Bậc 2 (Ô B12)</td>
+                            <td class="px-4 py-2 font-mono text-slate-800 bg-slate-50">=MAX(0, MIN(B9, 120000000) - 60000000)</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border-r font-medium text-slate-700">Tiền thuế Bậc 2 (Ô C12)</td>
+                            <td class="px-4 py-2 font-mono text-slate-800 bg-slate-50">=B12 * 10%</td>
+                        </tr>
+                        <!-- Bracket 3 -->
+                        <tr>
+                            <td class="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r" rowspan="2">Bậc 3</td>
+                            <td class="px-4 py-2 border-r text-blue-700 font-medium bg-blue-50/30">Tiền chịu thuế Bậc 3 (Ô B13)</td>
+                            <td class="px-4 py-2 font-mono text-slate-800 bg-slate-50">=MAX(0, MIN(B9, 216000000) - 120000000)</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border-r font-medium text-slate-700">Tiền thuế Bậc 3 (Ô C13)</td>
+                            <td class="px-4 py-2 font-mono text-slate-800 bg-slate-50">=B13 * 15%</td>
+                        </tr>
+                        <!-- Bracket 4 -->
+                        <tr>
+                            <td class="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r" rowspan="2">Bậc 4</td>
+                            <td class="px-4 py-2 border-r text-blue-700 font-medium bg-blue-50/30">Tiền chịu thuế Bậc 4 (Ô B14)</td>
+                            <td class="px-4 py-2 font-mono text-slate-800 bg-slate-50">=MAX(0, MIN(B9, 384000000) - 216000000)</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border-r font-medium text-slate-700">Tiền thuế Bậc 4 (Ô C14)</td>
+                            <td class="px-4 py-2 font-mono text-slate-800 bg-slate-50">=B14 * 20%</td>
+                        </tr>
+                        <!-- Bracket 5 -->
+                        <tr>
+                            <td class="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r" rowspan="2">Bậc 5</td>
+                            <td class="px-4 py-2 border-r text-blue-700 font-medium bg-blue-50/30">Tiền chịu thuế Bậc 5 (Ô B15)</td>
+                            <td class="px-4 py-2 font-mono text-slate-800 bg-slate-50">=MAX(0, MIN(B9, 624000000) - 384000000)</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border-r font-medium text-slate-700">Tiền thuế Bậc 5 (Ô C15)</td>
+                            <td class="px-4 py-2 font-mono text-slate-800 bg-slate-50">=B15 * 25%</td>
+                        </tr>
+                        <!-- Bracket 6 -->
+                        <tr>
+                            <td class="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r" rowspan="2">Bậc 6</td>
+                            <td class="px-4 py-2 border-r text-blue-700 font-medium bg-blue-50/30">Tiền chịu thuế Bậc 6 (Ô B16)</td>
+                            <td class="px-4 py-2 font-mono text-slate-800 bg-slate-50">=MAX(0, MIN(B9, 960000000) - 624000000)</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border-r font-medium text-slate-700">Tiền thuế Bậc 6 (Ô C16)</td>
+                            <td class="px-4 py-2 font-mono text-slate-800 bg-slate-50">=B16 * 30%</td>
+                        </tr>
+                         <!-- Bracket 7 -->
+                         <tr>
+                            <td class="px-4 py-2 text-center font-mono font-bold bg-slate-50 border-r" rowspan="2">Bậc 7</td>
+                            <td class="px-4 py-2 border-r text-blue-700 font-medium bg-blue-50/30">Tiền chịu thuế Bậc 7 (Ô B17)</td>
+                            <td class="px-4 py-2 font-mono text-slate-800 bg-slate-50">=MAX(0, B9 - 960000000)</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border-r font-medium text-slate-700">Tiền thuế Bậc 7 (Ô C17)</td>
+                            <td class="px-4 py-2 font-mono text-slate-800 bg-slate-50">=B17 * 35%</td>
+                        </tr>
 
-                  {/* Total */}
-                  <tr className="bg-red-50">
-                    <td className="px-4 py-4 text-center font-mono font-bold border-r text-red-700">A19</td>
-                    <td className="px-4 py-4 font-bold text-red-700 border-r text-lg">TỔNG THUẾ PHẢI NỘP</td>
-                    <td className="px-4 py-4 font-mono text-red-700 font-bold text-lg">=SUM(B11:B17)</td>
-                  </tr>
-                </tbody>
-              </table>
+                        <!-- Total -->
+                        <tr class="bg-red-50 border-t-2 border-red-200">
+                            <td class="px-4 py-4 text-center font-mono font-bold border-r text-red-700">A19</td>
+                            <td class="px-4 py-4 font-bold text-red-700 border-r text-lg">TỔNG THUẾ PHẢI NỘP</td>
+                            <td class="px-4 py-4 font-mono text-red-700 font-bold text-lg">=SUM(C11:C17)</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-          </div>
-        )}
+        </div>
 
-      </div>
     </div>
-  );
-}
+
+    <!-- Scripts xử lý Logic -->
+    <script>
+        // Constants
+        const MUC_GIAM_TRU_NPT = 4400000;
+        const MUC_GIAM_TRU_BAN_THAN = 11000000;
+        const THANG_TRONG_NAM = 12;
+
+        // Định dạng số
+        const formatNum = (num) => new Intl.NumberFormat('vi-VN').format(num);
+        const parseNum = (str) => parseInt(str.toString().replace(/\D/g, '') || '0', 10);
+
+        // Elements Input
+        const inTongThuNhap = document.getElementById('in-tong-thu-nhap');
+        const inSoNPT = document.getElementById('in-so-npt');
+        const inSoThang = document.getElementById('in-so-thang');
+        const inTienBaoHiem = document.getElementById('in-tien-bao-hiem');
+
+        // Hàm xử lý Input Format ngay khi nhập
+        function handleCurrencyInput(e) {
+            let val = parseNum(e.target.value);
+            e.target.value = val === 0 ? '' : formatNum(val);
+            calculate();
+        }
+
+        // Lắng nghe sự kiện thay đổi
+        inTongThuNhap.addEventListener('input', handleCurrencyInput);
+        inTienBaoHiem.addEventListener('input', handleCurrencyInput);
+        
+        inSoNPT.addEventListener('input', (e) => {
+            let val = Math.max(0, parseInt(e.target.value) || 0);
+            e.target.value = val;
+            calculate();
+        });
+
+        inSoThang.addEventListener('input', (e) => {
+            let val = Math.max(0, Math.min(12, parseInt(e.target.value) || 0));
+            e.target.value = val;
+            calculate();
+        });
+
+        // Hàm tính toán cốt lõi
+        function calculate() {
+            // Lấy giá trị đầu vào
+            const tongThuNhap = parseNum(inTongThuNhap.value);
+            const soNPT = parseInt(inSoNPT.value) || 0;
+            const soThangGiamTru = parseInt(inSoThang.value) || 0;
+            const tienBaoHiem = parseNum(inTienBaoHiem.value);
+
+            // Tính toán giảm trừ
+            const giamTruGiaCanh = soNPT * soThangGiamTru * MUC_GIAM_TRU_NPT;
+            const giamTruBanThan = THANG_TRONG_NAM * MUC_GIAM_TRU_BAN_THAN;
+            
+            const tongThuNhapTinhThue = Math.max(0, tongThuNhap - giamTruGiaCanh - tienBaoHiem - giamTruBanThan);
+
+            // Cập nhật bảng Chi Tiết Phép Tính
+            document.getElementById('calc-tong-thu-nhap').textContent = formatNum(tongThuNhap);
+            document.getElementById('calc-giam-tru-ban-than').textContent = formatNum(giamTruBanThan);
+            document.getElementById('calc-npt-count').textContent = soNPT;
+            document.getElementById('calc-npt-months').textContent = soThangGiamTru;
+            document.getElementById('calc-giam-tru-gia-canh').textContent = formatNum(giamTruGiaCanh);
+            document.getElementById('calc-bao-hiem').textContent = formatNum(tienBaoHiem);
+            document.getElementById('calc-tong-thu-nhap-tinh-thue').textContent = formatNum(tongThuNhapTinhThue);
+
+            // Logic hiện/ẩn Không đóng thuế
+            const badgeKhongThue = document.getElementById('badge-khong-thue');
+            if(tongThuNhapTinhThue <= 0) badgeKhongThue.classList.remove('hidden');
+            else badgeKhongThue.classList.add('hidden');
+
+            // Tính số tiền chịu thuế TỪNG BẬC
+            const tt1 = Math.max(0, Math.min(tongThuNhapTinhThue, 60000000) - 0);
+            const tt2 = Math.max(0, Math.min(tongThuNhapTinhThue, 120000000) - 60000000);
+            const tt3 = Math.max(0, Math.min(tongThuNhapTinhThue, 216000000) - 120000000);
+            const tt4 = Math.max(0, Math.min(tongThuNhapTinhThue, 384000000) - 216000000);
+            const tt5 = Math.max(0, Math.min(tongThuNhapTinhThue, 624000000) - 384000000);
+            const tt6 = Math.max(0, Math.min(tongThuNhapTinhThue, 960000000) - 624000000);
+            const tt7 = Math.max(0, tongThuNhapTinhThue - 960000000);
+
+            // Tính tiền thuế TỪNG BẬC
+            const thue1 = tt1 * 0.05;
+            const thue2 = tt2 * 0.10;
+            const thue3 = tt3 * 0.15;
+            const thue4 = tt4 * 0.20;
+            const thue5 = tt5 * 0.25;
+            const thue6 = tt6 * 0.30;
+            const thue7 = tt7 * 0.35;
+
+            const tongThue = thue1 + thue2 + thue3 + thue4 + thue5 + thue6 + thue7;
+
+            // Hàm hỗ trợ cập nhật UI cho từng bậc
+            function updateRowUI(bacNum, tt, thue) {
+                document.getElementById(`tt${bacNum}`).textContent = formatNum(tt);
+                document.getElementById(`thue${bacNum}`).textContent = formatNum(thue);
+                
+                const row = document.getElementById(`row-bac${bacNum}`);
+                if(tt > 0) {
+                    row.className = "bg-amber-50/50 text-amber-900 font-medium";
+                } else {
+                    row.className = "text-slate-400";
+                }
+            }
+
+            // Cập nhật DOM các bậc
+            updateRowUI(1, tt1, thue1);
+            updateRowUI(2, tt2, thue2);
+            updateRowUI(3, tt3, thue3);
+            updateRowUI(4, tt4, thue4);
+            updateRowUI(5, tt5, thue5);
+            updateRowUI(6, tt6, thue6);
+            updateRowUI(7, tt7, thue7);
+
+            // Cập nhật tổng
+            document.getElementById('tong-thue').textContent = formatNum(tongThue);
+        }
+
+        // Chuyển Tabs
+        function switchTab(tabId) {
+            const tabCalc = document.getElementById('tab-calculator');
+            const tabExcel = document.getElementById('tab-excel');
+            const btnCalc = document.getElementById('btn-tab-calculator');
+            const btnExcel = document.getElementById('btn-tab-excel');
+
+            if(tabId === 'calculator') {
+                tabCalc.classList.remove('hidden-section');
+                tabExcel.classList.add('hidden-section');
+                
+                btnCalc.className = "px-4 py-2 rounded-md font-medium text-sm transition-all flex items-center gap-2 bg-white text-blue-700 shadow-sm";
+                btnExcel.className = "px-4 py-2 rounded-md font-medium text-sm transition-all flex items-center gap-2 text-slate-600 hover:text-slate-900";
+            } else {
+                tabExcel.classList.remove('hidden-section');
+                tabCalc.classList.add('hidden-section');
+                
+                btnExcel.className = "px-4 py-2 rounded-md font-medium text-sm transition-all flex items-center gap-2 bg-white text-blue-700 shadow-sm";
+                btnCalc.className = "px-4 py-2 rounded-md font-medium text-sm transition-all flex items-center gap-2 text-slate-600 hover:text-slate-900";
+            }
+        }
+
+        // Khởi chạy tính toán lần đầu khi load trang
+        calculate();
+
+    </script>
+</body>
+</html>
