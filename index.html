@@ -313,11 +313,8 @@
     </div>
 
     <!-- Scripts xử lý Logic -->
-    <script>
-        // Constants
-        const MUC_GIAM_TRU_NPT = 4400000;
-        const MUC_GIAM_TRU_BAN_THAN = 11000000;
-        const THANG_TRONG_NAM = 12;
+    <script type="module">
+        import { calculateTax } from './calculator.mjs';
 
         // Định dạng số
         const formatNum = (num) => new Intl.NumberFormat('vi-VN').format(num);
@@ -360,45 +357,21 @@
             const soThangGiamTru = parseInt(inSoThang.value) || 0;
             const tienBaoHiem = parseNum(inTienBaoHiem.value);
 
-            // Tính toán giảm trừ
-            const giamTruGiaCanh = soNPT * soThangGiamTru * MUC_GIAM_TRU_NPT;
-            const giamTruBanThan = THANG_TRONG_NAM * MUC_GIAM_TRU_BAN_THAN;
-            
-            const tongThuNhapTinhThue = Math.max(0, tongThuNhap - giamTruGiaCanh - tienBaoHiem - giamTruBanThan);
+            const ketQua = calculateTax({ income: tongThuNhap, dependents: soNPT, deductionMonths: soThangGiamTru, insurance: tienBaoHiem });
 
             // Cập nhật bảng Chi Tiết Phép Tính
             document.getElementById('calc-tong-thu-nhap').textContent = formatNum(tongThuNhap);
-            document.getElementById('calc-giam-tru-ban-than').textContent = formatNum(giamTruBanThan);
+            document.getElementById('calc-giam-tru-ban-than').textContent = formatNum(ketQua.personalDeduction);
             document.getElementById('calc-npt-count').textContent = soNPT;
             document.getElementById('calc-npt-months').textContent = soThangGiamTru;
-            document.getElementById('calc-giam-tru-gia-canh').textContent = formatNum(giamTruGiaCanh);
+            document.getElementById('calc-giam-tru-gia-canh').textContent = formatNum(ketQua.dependentDeduction);
             document.getElementById('calc-bao-hiem').textContent = formatNum(tienBaoHiem);
-            document.getElementById('calc-tong-thu-nhap-tinh-thue').textContent = formatNum(tongThuNhapTinhThue);
+            document.getElementById('calc-tong-thu-nhap-tinh-thue').textContent = formatNum(ketQua.taxableIncome);
 
             // Logic hiện/ẩn Không đóng thuế
             const badgeKhongThue = document.getElementById('badge-khong-thue');
-            if(tongThuNhapTinhThue <= 0) badgeKhongThue.classList.remove('hidden');
+            if(ketQua.taxableIncome <= 0) badgeKhongThue.classList.remove('hidden');
             else badgeKhongThue.classList.add('hidden');
-
-            // Tính số tiền chịu thuế TỪNG BẬC
-            const tt1 = Math.max(0, Math.min(tongThuNhapTinhThue, 60000000) - 0);
-            const tt2 = Math.max(0, Math.min(tongThuNhapTinhThue, 120000000) - 60000000);
-            const tt3 = Math.max(0, Math.min(tongThuNhapTinhThue, 216000000) - 120000000);
-            const tt4 = Math.max(0, Math.min(tongThuNhapTinhThue, 384000000) - 216000000);
-            const tt5 = Math.max(0, Math.min(tongThuNhapTinhThue, 624000000) - 384000000);
-            const tt6 = Math.max(0, Math.min(tongThuNhapTinhThue, 960000000) - 624000000);
-            const tt7 = Math.max(0, tongThuNhapTinhThue - 960000000);
-
-            // Tính tiền thuế TỪNG BẬC
-            const thue1 = tt1 * 0.05;
-            const thue2 = tt2 * 0.10;
-            const thue3 = tt3 * 0.15;
-            const thue4 = tt4 * 0.20;
-            const thue5 = tt5 * 0.25;
-            const thue6 = tt6 * 0.30;
-            const thue7 = tt7 * 0.35;
-
-            const tongThue = thue1 + thue2 + thue3 + thue4 + thue5 + thue6 + thue7;
 
             // Hàm hỗ trợ cập nhật UI cho từng bậc
             function updateRowUI(bacNum, tt, thue) {
@@ -414,20 +387,14 @@
             }
 
             // Cập nhật DOM các bậc
-            updateRowUI(1, tt1, thue1);
-            updateRowUI(2, tt2, thue2);
-            updateRowUI(3, tt3, thue3);
-            updateRowUI(4, tt4, thue4);
-            updateRowUI(5, tt5, thue5);
-            updateRowUI(6, tt6, thue6);
-            updateRowUI(7, tt7, thue7);
+            ketQua.taxableAmounts.forEach((taxableAmount, index) => updateRowUI(index + 1, taxableAmount, ketQua.taxes[index]));
 
             // Cập nhật tổng
-            document.getElementById('tong-thue').textContent = formatNum(tongThue);
+            document.getElementById('tong-thue').textContent = formatNum(ketQua.totalTax);
         }
 
         // Chuyển Tabs
-        function switchTab(tabId) {
+        window.switchTab = function switchTab(tabId) {
             const tabCalc = document.getElementById('tab-calculator');
             const tabExcel = document.getElementById('tab-excel');
             const btnCalc = document.getElementById('btn-tab-calculator');
